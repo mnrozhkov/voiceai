@@ -1,6 +1,6 @@
 from pyItunes import *
 import os
-from subprocess import Popen, call
+from subprocess import Popen, call, PIPE
 import random
 import pathlib
 import time
@@ -40,25 +40,16 @@ class MusicControl:
 					return self.PlayList(self.list)
 
 			#SEARCH ALBUMS
-			albumFound = False
-			startIndex = 0
-			endIndex = 0
+			#albumFound = False
+			#startIndex = 0
+			#endIndex = 0
 			albumList = []
-			self.list.sort(key=lambda tup:tup[0])
+			#self.list.sort(key=lambda tup:tup[0])
 			for i, song in enumerate(self.list):
 				index = (song[0].lower()).find(song_name)
 				if index > -1:
-					if albumFound == False:
-						startIndex = i
-						albumFound = True
-						endIndex = i+1
-					else:
-						endIndex = endIndex + 1
-				else:
-					if albumFound == True:
-						break
-			if albumFound == True:
-				albumList = self.list[startIndex:endIndex]
+					albumList.append(self.list[i])
+			if len(albumList) > 0:
 				random.shuffle(albumList)
 				return self.PlayList(albumList)
 				
@@ -76,26 +67,17 @@ class MusicControl:
 					self.list[0], song = song, self.list[0]
 					return self.PlayList(self.list)
 
-			albumFound = False
-			startIndex = 0
-			endIndex = 0
+			#albumFound = False
+			#startIndex = 0
+			#endIndex = 0
 			albumList = []
-			self.list.sort(key=lambda tup:tup[0])
+			#self.list.sort(key=lambda tup:tup[0])
 			for i, song in enumerate(self.list):
 				index1 = (song[0].lower()).find(song_name)
 				index2 = (song[1].lower()).find(artist_name)
 				if index1 > -1 and index2 > -1:
-					if albumFound == False:
-						startIndex = i
-						albumFound = True
-						endIndex = i+1
-					else:
-						endIndex = endIndex + 1
-				else:
-					if albumFound == True:
-						break
-			if albumFound == True:
-				albumList = self.list[startIndex:endIndex]
+					albumList.append(self.list[i])
+			if len(albumList) > 0:
 				random.shuffle(albumList)
 				return self.PlayList(albumList)
 				
@@ -113,25 +95,16 @@ class MusicControl:
 
 		if song_name == None and artist_name != None and album_name == None:
 			artist_name = artist_name.lower()
-			artistFound = False
-			startIndex = 0
-			endIndex = 0
+			#artistFound = False
+			#startIndex = 0
+			#endIndex = 0
 			artistList = []
-			self.list.sort(key=lambda tup:tup[1])
+			#self.list.sort(key=lambda tup:tup[1])
 			for i, song in enumerate(self.list):
 				index = (song[1].lower()).find(artist_name)
 				if index > -1:
-					if artistFound == False:
-						startIndex = i
-						artistFound = True
-						endIndex = i+1
-					else:
-						endIndex = endIndex + 1
-				else:
-					if artistFound == True:
-						break
-			if artistFound == True:
-				artistList = self.list[startIndex:endIndex]
+					artistList.append(self.list[i])					
+			if len(artistList)
 				random.shuffle(artistList)
 				return self.PlayList(artistList)
 				
@@ -145,11 +118,13 @@ class MusicControl:
 
 		return "Something"		
 
-	def Play(self):
-		if self.cvlc_loaded == True:
+	def Play(self, song_name=None, artist_name=None, album_name=None):
+		process = Popen(['./mprisvlc.sh', 'vlc', 'status'], stdout=PIPE, stderr=PIPE)
+		out, err = process.communicate()
+		if song_name==None and artist_name==None and album_name==None and out=='Paused':
 			os.system(" ".join(['./mprisvlc.sh', 'vlc', 'play']))
 		else:
-			self.SearchSong()
+			self.SearchSong(song_name, artist_name, album_name)
 
 	def Pause(self):
 		os.system(" ".join(['./mprisvlc.sh', 'vlc', 'pause']))

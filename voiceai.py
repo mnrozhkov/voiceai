@@ -177,7 +177,7 @@ def process_message(msg):
 			return msg
 
 		if MusicVerb == 'resume':
-			msg = "\n".join([msg, "Playing song :", mp.SearchSong()])
+			msg = "\n".join([msg, "Playing song :", mp.Play()])
 			return msg
 
 		Modifier = ""
@@ -209,7 +209,7 @@ def process_message(msg):
 			album_name = Artworks[1]
 
 		if MusicVerb == 'play':
-			msg = "\n".join([msg, "Playing song :", mp.SearchSong(song_name, artist_name, album_name)])
+			msg = "\n".join([msg, "Playing song :", mp.Play(song_name, artist_name, album_name)])
 			#bot.send_text_message(recipient_id, msg)
 
 		return msg
