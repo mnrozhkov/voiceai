@@ -4,30 +4,33 @@ from subprocess import Popen, PIPE
 class TrainControl():
 
 	def __init__(self):
-		self.posAddDir = 'stanford-pos/newText.tsv'
-		self.posOrigDir = 'stanford-pos/brownCorp.tsv'
-		self.posTrainDir = 'stanford-pos/trainpos.tsv'
-		self.posModelDir = 'stanford-pos/voiceai-pos.tagger'
-		self.posPropsDir = 'stanford-pos/voiceai-pos.tagger.props'
-		self.posTaggerDir = 'stanford-pos/stanford-postagger.jar'
+		self.posAddDir = 'newText.tsv'
+		self.posOrigDir = 'brownCorp.tsv'
+		self.posTrainDir = 'trainpos.tsv'
+		self.posModelDir = 'voiceai-pos.tagger'
+		self.posPropsDir = 'voiceai-pos.tagger.props'
+		self.posTaggerDir = 'stanford-postagger.jar'
 
-		self.nerAddDir = 'stanford-ner/extras.tsv'
-		self.nerMusicDir = 'stanford-ner/musicxml.tsv'
-		self.nerModelDir = 'stanford-ner/voiceai-ner.ser.gz'
-		self.nerPropsDir = 'stanford-ner/voiceai-ner.props'
-		self.nerTaggerDir = 'stanford-ner/stanford-ner.jar'
+		self.nerAddDir = 'extras.tsv'
+		self.nerMusicDir = 'musicxml.tsv'
+		self.nerModelDir = 'voiceai-ner.ser.gz'
+		self.nerPropsDir = 'voiceai-ner.prop'
+		self.nerTaggerDir = 'stanford-ner.jar'
 
-		self.ftAddDir = 'fastText/voiceai-train.tsv'
-		self.ftModelDir = 'fastText/voiceai'
-		self.ftSupervisedDir = 'fastText/fasttext'
+		self.ftAddDir = 'voiceai-train.tsv'
+		self.ftModelDir = 'voiceai'
+		self.ftSupervisedDir = 'fasttext'
 	
 	def addPOSTagger(self, msg):
+		os.chdir('stanford-pos')
 		addfile = open(self.posAddDir, 'a')
 		addfile.write(msg)
 		addfile.write('\n')
 		addfile.close()
+		os.chdir('..')
 
 	def trainPOSTagger(self):
+		os.chdir('stanford-pos')
 		trainfile = open(self.posTrainDir, 'w')
 		addfile = open(self.posAddDir, 'r')
 		brownfile = open(self.posOrigDir, 'r')
@@ -41,10 +44,11 @@ class TrainControl():
 		trainfile.close()
 		addfile.close()
 		brownfile.close()
-
+		os.chdir('..')
 		#trainProcess = Popen(["java", "-mx1g", "-cp", self.posTaggerDir, "edu.stanford.nlp.tagger.maxent.MaxentTagger", "-props", self.posPropsDir])
 
 	def addNERTagger(self, msg):
+		os.chdir('stanford-ner')
 		words = msg.split()
 		tag = words[-1].upper()
 		tokens = words[:-1]
@@ -58,10 +62,12 @@ class TrainControl():
 
 		addfile.write('\n')
 		addfile.close()
+		os.chdir('..')
 
 	def trainNERTagger(self):
+		os.chdir('stanford-ner')
 		trainProcess = Popen(["java", "-mx1g", "-cp", self.nerTaggerDir, "edu.stanford.nlp.ie.crf.CRFClassifier", "-prop", self.nerPropsDir])
-
+		os.chdir('..')
 	def addFt(self, msg):
 		addfile = open(self.ftAddDir, 'a')
 		words = msg.split()

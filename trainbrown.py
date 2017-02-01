@@ -22,10 +22,10 @@ for line in cats:
 			if len(tags) > 4 and tags[-2]=="t" and tags[-1]=="l":
 				wrdtag == "ENT"
 			else:
-				if tag=="od" or tag=="cd" or tag=="np":
+				if tag=="np":
 					wrdtag = "ENT"
 				else:
-					if tag=="ab" or tag=="jj" or tag=="ap":
+					if tag=="ab" or tag=="jj" or tag=="ap" or tag == "od":
 						wrdtag = "ADJ"
 					else:
 						if tag=="at" or tag=="dt" or tag=="pn" or tag=="pp" or tag=="pr":
@@ -50,12 +50,15 @@ for line in cats:
 													wrdtag = "ITJ"
 												else:
 													if tag=="fw":
-														wrdtag = "O"
+														wrdtag = "ENT"
 													else:
 														if tag=="wp" or tag=="wd" or tag=="wq" or tag=="wr":
 															wrdtag = 'QUS'
 														else:
-															wrdtag = "."
+															if tag == "cd":
+																wrdtag = 'NUM'
+															else:
+																wrdtag = "."
 			if wrdtag == "":
 				wrdtag = "ENT"
 			fw.write(wrd)

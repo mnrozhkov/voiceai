@@ -3,10 +3,15 @@ __label__1 , play music
 __label__1 , play songs
 __label__2 , adjust the brightness to 70 %
 __label__2 , increase the volume
+__label__3 , convert egp to inr
+__label__3 , convert kilograms to milligrams
 __label__1 , play some taylor swift songs
 __label__2 , decrease the brightness
+__label__3 , convert 100 jpy to dnr
+__label__3 , how many miles are there in 1 km ?
 __label__1 , stop the music
 __label__1 , pause the music
+__label__3 , how much is 10 kgs in grams ?
 __label__2 , increase the volume by 10 %
 __label__2 , set volume to 0 %
 __label__1 , play the artist halsey ( artist )
@@ -15,5 +20,16 @@ __label__2 , reduce the brightness
 __label__2 , reduce the volume
 __label__2 , set the brightness to 100 %
 __label__1 , play alive
+__label__3 , convert 1 aed to usd
+__label__3 , how many millilitres in 1 litre ?
+__label__3 , how many days are there in a month
 __label__1 , play alive by krewella
 __label__2 , set brightness max
+__label__1 , play i knew you were trouble
+__label__1 , play the red album by taylor swift
+__label__2 , decrease the volume by 10 %
+__label__2 , increase the brightness
+__label__1 , increase volume a little
+__label__3 , how much is 1 usd in inr ?
+__label__1 , pause the songs
+__label__2 , decrease the brightness by 5 %

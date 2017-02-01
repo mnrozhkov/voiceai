@@ -15,7 +15,7 @@ import os
 #MODULE CONTROLS
 from loadmusic import MusicControl
 from loadtrainer import TrainControl
-#from loadbrightness import BrightnessControl
+from loadhardware import HardwareControl
 #from loadnet import QuestionControl
 #from loadalarm import AlarmControl
 #from loadgreet import GreetingControl
@@ -26,7 +26,7 @@ spt = StanfordPOSTagger('stanford-pos/voiceai-pos.tagger', 'stanford-pos/stanfor
 
 mp  = MusicControl()
 tc  = TrainControl()
-#bc  = BrightnessControl()
+hc  = HardwareControl()
 #qc  = QuestionControl()
 #ac  = AlarmControl()
 #gc  = GreetingControl()
@@ -63,7 +63,8 @@ def hello():
                         bot.send_text_message(recipient_id, msg)
                     if x['message'].get('attachments'):
                         for att in x['message'].get('attachments'):
-                            bot.send_attachment_url(recipient_id, att['type'], att['payload']['url'])
+                            print(att['payload']['url'])
+                            #bot.send_attachment_url(recipient_id, att['type'], att['payload']['url'])
                 else:
                     pass
         return "Success"
@@ -78,9 +79,10 @@ def process_message(msg):
 	#4 - Alarm
 	#0 - Train POS and NER
 
-	if msg_words == 'xadd' or msg_words == 'xtrain':
+	if msg_words[0] == 'xadd' or msg_words[0] == 'xtrain':
 		#START TRAINING/ADDING
 		return "Train / Add done!"
+
 
 	textType = tyc.classifyText(msg)
 	if textType > -1:
@@ -92,7 +94,7 @@ def process_message(msg):
 	Nouns = []
 	Verbs = []
 	Adjs  = []
-	entities = []
+	Numbers = []
 	pos_tagged = spt.tag(msg_words)
 	
 	for i, tup in enumerate(pos_tagged):
@@ -106,6 +108,14 @@ def process_message(msg):
 			else:
 				if tup[1] == 'NNN':
 					Nouns.append((i, tup[0].lower()))
+				else:
+					if tup[1] == 'NUM':
+						Numbers.append((i, tup[0]))
+
+	saveF = open("allTexts.tsv", 'a')
+	saveF.write(msg)
+	saveF.write('\n')
+	saveF.close()
 	
 	#CATCH ENTITIES
 	entities = []
@@ -130,7 +140,6 @@ def process_message(msg):
 	Locations = []
 	Time = []
 	Date = []
-	Quatity = []
 	Money = []
 	
 	msg = "".join([msg, "\nEntities : "])
@@ -150,8 +159,6 @@ def process_message(msg):
 			Time.append(" ".join([x[0] for x in pos_tagged]))
 		if pos_tagged[0][1] == 'DAT':
 			Date.append(" ".join([x[0] for x in pos_tagged]))
-		if pos_tagged[0][1] == 'QUA':
-			Quantity.append(" ".join([x[0] for x in pos_tagged]))
 		if pos_tagged[0][1] == 'MON':
 			Money.append(" ".join([x[0] for x in pos_tagged]))
 
@@ -160,31 +167,44 @@ def process_message(msg):
 	if textType == 1:
 		#TYPE MUSIC
 		#Keywords - play, stop, pause, resume, shuffle - VERBS, music, song(s), track(s), artist, singer, musician, album, band - NOUNS, next, previous - ADJS, ART, PER - ENT	
+		KeyVerbs = ['play', 'stop', 'pause', 'resume']
+		KeyNouns = ['music', 'song', 'album', 'artist']
+		KeyModif = ['next', 'previous']
 
-		MusicVerb = ""
+		MainVerb = ""
 		for eachVerb in Verbs:
 			verbSub = eachVerb[1].lower()
-			if verbSub == 'play' or verbSub == 'stop' or verbSub == 'pause' or verbSub == 'resume' or verbSub == 'shuffle':
-				MusicVerb = verbSub
+			found = False
+			for eachKey in KeyVerbs:
+				if verbSub == eachKey:
+					MainVerb = eachKey
+					found = True
+					break
+			if found:
 				break
 
-		if MusicVerb == 'stop':
+		if MainVerb == 'stop':
 			mp.Stop()
 			return msg
 
-		if MusicVerb == 'pause':
+		if MainVerb == 'pause':
 			mp.Pause()
 			return msg
 
-		if MusicVerb == 'resume':
+		if MainVerb == 'resume':
 			msg = "\n".join([msg, "Playing song :", mp.Play()])
 			return msg
 
 		Modifier = ""
 		for eachAdj in Adjs:
 			adjSub = eachAdj[1].lower()
-			if adjSub == 'next' or adjSub == 'previous' or adjSub == 'last':
-				Modifier = adjSub
+			found = False
+			for eachKey in KeyModif:
+				if adjSub == eachKey:
+					Modifier = eachKey
+					found = True
+					break
+			if found:
 				break
 
 		if Modifier == 'next':
@@ -208,13 +228,78 @@ def process_message(msg):
 		if len(Artworks) > 1:
 			album_name = Artworks[1]
 
-		if MusicVerb == 'play':
+		if MainVerb == 'play':
 			msg = "\n".join([msg, "Playing song :", mp.Play(song_name, artist_name, album_name)])
 			#bot.send_text_message(recipient_id, msg)
 
 		return msg
 	
 	if textType == 2:
+		KeyVerbs = ['set', 'increase', 'decrease']
+		KeyNouns = ['brightness', 'volume']
+		MainVerb = ""
+		MainNoun = ""
+
+		for eachVerb in Verbs:
+			verbSub = eachVerb[1].lower()
+			found = False
+			for eachKey in KeyVerbs:
+				if verbSub == eachKey:
+					MainVerb = eachKey
+					found = True
+					break
+			if found:
+				break
+
+		if MainVerb == "":
+			return "".join([msg, "\nSorry Vidur, I didn't get that"])
+
+		for eachNoun in Nouns:
+			nounSub = eachNoun[1].lower()
+			found = False
+			for eachKey in KeyNouns:
+				if nounSub == eachKey:
+					MainNoun = eachKey
+					found = True
+					break
+			if found:
+				break
+
+		if MainNoun == "":
+			return "".join([msg, "\nSorry Vidur, I didn't get that"])
+
+		percent = -10
+		if len(Numbers) > 0:
+			percent = int(Numbers[0][1])
+
+		if MainVerb == 'set':
+			if percent == -10:
+				return "".join([msg, "\nSorry Vidur, I didn't get that"])
+
+			if MainNoun == 'brightness':
+				return "".join([msg, hc.setBrightness(percent)])
+
+			if MainNoun == 'volume':
+				return "".join([msg, hc.setVolume(percent)])
+
+		if percent < 0:
+			percent = 13
+
+		if MainVerb == 'increase':
+			if MainNoun == 'brightness':
+				return "".join([msg, hc.increaseBrightness(percent)])
+
+			if MainNoun == 'volume':
+				return "".join([msg, hc.increaseVolume(percent)])
+
+		if MainVerb == 'decrease':
+			if MainNoun == 'brightness':
+				return "".join([msg, hc.increaseBrightness(percent, False)])
+
+			if MainNoun == 'volume':
+				return "".join([msg, hc.increaseVolume(percent, False)])
+
+
 		return msg
 
 	return msg

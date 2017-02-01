@@ -4,6 +4,7 @@ from subprocess import Popen, call, PIPE
 import random
 import pathlib
 import time
+from pprint import pprint
 
 class MusicControl:
 	def __init__(self):
@@ -49,6 +50,7 @@ class MusicControl:
 				index = (song[0].lower()).find(song_name)
 				if index > -1:
 					albumList.append(self.list[i])
+
 			if len(albumList) > 0:
 				random.shuffle(albumList)
 				return self.PlayList(albumList)
@@ -104,7 +106,7 @@ class MusicControl:
 				index = (song[1].lower()).find(artist_name)
 				if index > -1:
 					artistList.append(self.list[i])					
-			if len(artistList)
+			if len(artistList) > 0:
 				random.shuffle(artistList)
 				return self.PlayList(artistList)
 				
@@ -121,10 +123,13 @@ class MusicControl:
 	def Play(self, song_name=None, artist_name=None, album_name=None):
 		process = Popen(['./mprisvlc.sh', 'vlc', 'status'], stdout=PIPE, stderr=PIPE)
 		out, err = process.communicate()
-		if song_name==None and artist_name==None and album_name==None and out=='Paused':
+		out = str(out, 'utf-8')
+		#return "bleh"
+		if song_name==None and artist_name==None and album_name==None and out!='':
 			os.system(" ".join(['./mprisvlc.sh', 'vlc', 'play']))
+			return "Resuming music"
 		else:
-			self.SearchSong(song_name, artist_name, album_name)
+			return self.SearchSong(song_name, artist_name, album_name)
 
 	def Pause(self):
 		os.system(" ".join(['./mprisvlc.sh', 'vlc', 'pause']))
