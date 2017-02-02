@@ -3,8 +3,9 @@ from subprocess import Popen, PIPE
 
 class TypeClassifier():
 	
-	def __init__(self, modelDir):
+	def __init__(self, modelDir, execDir):
 		self.mdir = modelDir
+		self.edir = execDir
 
 	def classifyText(self, text):
 		text = text.lower()
@@ -12,7 +13,7 @@ class TypeClassifier():
 		f.write(text)
 		f.close()
 
-		process = Popen(["fastText/fasttext", "predict", self.mdir, "tmp.dat"], stdout=PIPE, stderr=PIPE)
+		process = Popen([self.edir, "predict", self.mdir, "tmp.dat"], stdout=PIPE, stderr=PIPE)
 		out, err = process.communicate()
 	
 		line = str(out, 'utf-8')

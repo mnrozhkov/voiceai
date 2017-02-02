@@ -7,11 +7,11 @@ import time
 from pprint import pprint
 
 class MusicControl:
-	def __init__(self):
-		self.l = Library('iml.xml')
+	def __init__(self, xmlDir, musicDir):
+		self.l = Library(xmlDir)
 		self.cvlc_loaded = False
 		self.list = []
-		self.defLoc = '/run/media/vidur/Kachra/Music/'
+		self.defLoc = musicDir#'/run/media/vidur/Kachra/Music/'
 		for id, song in self.l.songs.items():
 			if song:
 				self.list.append([str(song.album), str(song.artist), str(song.name), "".join([self.defLoc, str(song.location[9:])])])

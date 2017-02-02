@@ -4,7 +4,8 @@ Voiceai is a library for controlling a machine using text and voice based interf
 1. The [Stanford NER tagger](http://nlp.stanford.edu/software/CRF-NER.shtml) for NER Tagging
 2. The [Stanford POS tagger](http://nlp.stanford.edu/software/tagger.shtml) for POS Tagging
 3. The Facebook [fastText](https://github.com/facebookresearch/fastText) api for text classification
-4. The [CMU Sphinx]() api for voice recognition(**not added yet**)
+4. The [CMU Sphinx](https://cmusphinx.sourceforge.net) api for voice recognition(**not added yet**)
+5. The [pyItunes](https://github.com/liamks/pyitunes) api for parsing iTunes XML for music data
 
 ## Features 
 The following features are available : 
@@ -13,7 +14,7 @@ The following features are available :
   1. Play Song/Artist/Album
   2. Pause
   3. Stop
-  3. Resume
+  4. Resume
   
 2. Hardware Control
   1. Adjust volume
@@ -29,6 +30,12 @@ The following features are available :
   
 5. Web search Control
   1. Search anything using the [DuckDuckGo](https://duckduckgo.com) api
+
+6. Greeting Control
+  1. Engage in a casual conversation with the bot
+
+7. Alarm Control
+  1. Set alarms and reminders
 
 ### Installation
 Place the voiceai directory in your project

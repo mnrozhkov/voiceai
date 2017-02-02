@@ -1,0 +1,9 @@
+Increase_VER brightness_NNN by_PRE 10_NUM %_.
+Decrease_VER volume_NNN by_PRE 93_NUM %_.
+Set_VER the_PRT volume_NNN to_PRE 50_NUM %_.
+Pause_VER music_NNN is_VER a_PRT command_NNN ._.
+Pause_VER is_VER a_PRT verb_NNN ._.
+Pause_VER songs_NNN ._.
+Decrease_VER the_PRT volume_NNN ._.
+Increase_VER the_PRT volume_NNN ._.
+Increase_VER the_PRT brightness_NNN ._.
