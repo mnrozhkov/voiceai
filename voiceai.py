@@ -16,19 +16,21 @@ from loadhardware import HardwareControl
 #from loadalarm import AlarmControl
 #from loadgreet import GreetingControl
 from typeclassifier import TypeClassifier
+from loadconversion import ConversionControl
 
-class VoiceAIControl(ner_dir, pos_dir, ft_dir):
+class VoiceAIControl:
+	def __init__(self, ner_dir, pos_dir, ft_dir):
+		self.snt = StanfordNERTagger(ner_dir[0], ner_dir[1])#'stanford-ner/voiceai-ner.ser.gz', 'stanford-ner/stanford-ner.jar') 
+		self.spt = StanfordPOSTagger(pos_dir[0], pos_dir[1])#'stanford-pos/voiceai-pos.tagger', 'stanford-pos/stanford-postagger.jar')
 
-	self.snt = StanfordNERTagger(ner_dir[0], ner_dir[1])#'stanford-ner/voiceai-ner.ser.gz', 'stanford-ner/stanford-ner.jar') 
-	self.spt = StanfordPOSTagger(pos_dir[0], pos_dir[1])#'stanford-pos/voiceai-pos.tagger', 'stanford-pos/stanford-postagger.jar')
-
-	self.mp  = MusicControl('iml.xml', '/run/media/vidur/Kachra/Music/')
-	#self.tc  = TrainControl()
-	self.hc  = HardwareControl()
-	#self.qc  = QuestionControl()
-	#self.ac  = AlarmControl()
-	#self.gc  = GreetingControl()
-	self.tyc = TypeClassifier(ft_dir[0], ft_dir[1])#"fastText/voiceai.bin")
+		self.mp  = MusicControl('iml.xml', '/run/media/vidur/Kachra/Music/')
+		#self.tc  = TrainControl()
+		self.hc  = HardwareControl()
+		#self.qc  = QuestionControl()
+		#self.ac  = AlarmControl()
+		#self.gc  = GreetingControl()
+		self.tyc = TypeClassifier(ft_dir[0], ft_dir[1])#"fastText/voiceai.bin")
+		self.cc  = ConversionControl()
 
 	def process_message(self, msg):
 		msg_words = nltk.word_tokenize(msg)
@@ -56,7 +58,7 @@ class VoiceAIControl(ner_dir, pos_dir, ft_dir):
 		Verbs = []
 		Adjs  = []
 		Numbers = []
-		pos_tagged = spt.tag(msg_words)
+		pos_tagged = self.spt.tag(msg_words)
 		
 		for i, tup in enumerate(pos_tagged):
 			mixed = tup[0]+'-'+tup[1]
@@ -105,7 +107,7 @@ class VoiceAIControl(ner_dir, pos_dir, ft_dir):
 		
 		msg = "".join([msg, "\nEntities : "])
 		for entity in entities:
-			pos_tagged = snt.tag(entity)
+			pos_tagged = self.snt.tag(entity)
 			msg2 = " ".join(["-".join([x[0], x[1]]) for x in pos_tagged])
 			msg = "\n".join([msg, msg2])
 			if pos_tagged[0][1] == 'PER':
@@ -263,5 +265,14 @@ class VoiceAIControl(ner_dir, pos_dir, ft_dir):
 
 			return msg
 
-		return msg
+		if textType == 3:
+			quantity = 1
+			if len(Numbers) > 0:
+				quantity = int(Numbers[0][1])
 
+			if len(Money) > 1:
+				return "".join([msg, self.cc.convertMoney(Money[0], quantity, Money[1])])
+			else:
+				return "".join([msg, self.cc.convertMoney(Money[0], quantity)]) 	
+			
+			

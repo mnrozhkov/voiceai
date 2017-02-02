@@ -6,6 +6,7 @@ Voiceai is a library for controlling a machine using text and voice based interf
 3. The Facebook [fastText](https://github.com/facebookresearch/fastText) api for text classification
 4. The [CMU Sphinx](https://cmusphinx.sourceforge.net) api for voice recognition(**not added yet**)
 5. The [pyItunes](https://github.com/liamks/pyitunes) api for parsing iTunes XML for music data
+6. The [pint](https://github.com/hgrecco/pint) library for cross units and dimensions conversion
 
 ## Features 
 The following features are available : 
@@ -26,7 +27,7 @@ The following features are available :
   
 4. Conversion Control
   1. Convert units and dimensions
-  2. Convert currencies (*internet required*)
+  2. Convert currencies (*internet required*) ([fixer.io](http://api.fixer.io/))
   
 5. Web search Control
   1. Search anything using the [DuckDuckGo](https://duckduckgo.com) api
@@ -36,6 +37,7 @@ The following features are available :
 
 7. Alarm Control
   1. Set alarms and reminders
+
 
 ### Installation
 Place the voiceai directory in your project
