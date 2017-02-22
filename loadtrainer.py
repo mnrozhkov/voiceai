@@ -4,33 +4,33 @@ from subprocess import Popen, PIPE
 class TrainControl():
 
 	def __init__(self):
-		self.posAddDir = 'newText.tsv'
-		self.posOrigDir = 'brownCorp.tsv'
-		self.posTrainDir = 'trainpos.tsv'
-		self.posModelDir = 'voiceai-pos.tagger'
-		self.posPropsDir = 'voiceai-pos.tagger.props'
-		self.posTaggerDir = 'stanford-postagger.jar'
+		self.posAddDir = 'models/stanford-pos/newText.tsv'
+		self.posOrigDir = 'models/stanford-pos/brownCorp.tsv'
+		self.posTrainDir = 'models/stanford-pos/trainpos.tsv'
+		self.posModelDir = 'models/stanford-pos/voiceai-pos.tagger'
+		self.posPropsDir = 'models/stanford-pos/voiceai-pos.tagger.props'
+		self.posTaggerDir = 'stanford-pos/stanford-postagger.jar'
 
-		self.nerAddDir = 'extras.tsv'
-		self.nerMusicDir = 'musicxml.tsv'
-		self.nerModelDir = 'voiceai-ner.ser.gz'
-		self.nerPropsDir = 'voiceai-ner.prop'
-		self.nerTaggerDir = 'stanford-ner.jar'
+		self.nerAddDir = 'models/stanford-ner/extras.tsv'
+		self.nerMusicDir = 'models/stanford-ner/musicxml.tsv'
+		self.nerModelDir = 'models/stanford-ner/voiceai-ner.ser.gz'
+		self.nerPropsDir = 'models/stanford-ner/voiceai-ner.prop'
+		self.nerTaggerDir = 'stanford-ner/stanford-ner.jar'
 
-		self.ftAddDir = 'voiceai-train.tsv'
-		self.ftModelDir = 'voiceai'
-		self.ftSupervisedDir = 'fasttext'
+		self.ftAddDir = 'models/fastText/voiceai-train.tsv'
+		self.ftModelDir = 'models/fastText/voiceai'
+		self.ftSupervisedDir = 'fastText/fasttext'
 	
 	def addPOSTagger(self, msg):
-		os.chdir('stanford-pos')
+		#os.chdir('stanford-pos')
 		addfile = open(self.posAddDir, 'a')
 		addfile.write(msg)
 		addfile.write('\n')
 		addfile.close()
-		os.chdir('..')
+		#os.chdir('..')
 
 	def trainPOSTagger(self):
-		os.chdir('stanford-pos')
+		#os.chdir('stanford-pos')
 		trainfile = open(self.posTrainDir, 'w')
 		addfile = open(self.posAddDir, 'r')
 		brownfile = open(self.posOrigDir, 'r')
@@ -44,7 +44,7 @@ class TrainControl():
 		trainfile.close()
 		addfile.close()
 		brownfile.close()
-		os.chdir('..')
+		#os.chdir('..')
 		#trainProcess = Popen(["java", "-mx1g", "-cp", self.posTaggerDir, "edu.stanford.nlp.tagger.maxent.MaxentTagger", "-props", self.posPropsDir])
 
 	def addNERTagger(self, msg):

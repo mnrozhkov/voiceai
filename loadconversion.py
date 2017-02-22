@@ -32,5 +32,6 @@ class ConversionControl:
 
 		return " ".join([str(quantity), from_m, "is equal to", str(conversion), to_m])
 
-	def convertUnit(self):
+	def convertUnit(self, unit1, quantity=1, type1='mks', type2='mks', unit2=None):
+		
 		return "Nothin"

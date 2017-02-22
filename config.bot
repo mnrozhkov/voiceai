@@ -1,0 +1,10 @@
+MODELS_DIR
+models
+FASTTEXT_DIR
+fastText
+POS_DIR
+stanford-pos/stanford-postagger.jar
+NER_DIR
+stanford-ner/stanford-ner.jar
+MUSIC_XML_DIR
+iml.xml

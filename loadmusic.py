@@ -17,6 +17,9 @@ class MusicControl:
 				self.list.append([str(song.album), str(song.artist), str(song.name), "".join([self.defLoc, str(song.location[9:])])])
 		#self.list.sort(key=lambda tup:tup[1])
 
+	def processText(self, textArray):
+		return "Processed"
+
 	def PlayList(self, SongList=None):
 		firstSongLoc = SongList[0][3]
 		os.system("./mprisvlc.sh vlc quit")
@@ -127,7 +130,7 @@ class MusicControl:
 		#return "bleh"
 		if song_name==None and artist_name==None and album_name==None and out!='':
 			os.system(" ".join(['./mprisvlc.sh', 'vlc', 'play']))
-			return "Resuming music"
+			return self.SearchSong(song_name, artist_name, album_name)#"Resuming music"
 		else:
 			return self.SearchSong(song_name, artist_name, album_name)
 

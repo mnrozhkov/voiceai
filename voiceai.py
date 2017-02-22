@@ -10,7 +10,6 @@ import os
 
 #MODULE CONTROLS
 from loadmusic import MusicControl
-from loadtrainer import TrainControl
 from loadhardware import HardwareControl
 #from loadnet import QuestionControl
 #from loadalarm import AlarmControl
@@ -20,16 +19,47 @@ from loadconversion import ConversionControl
 
 class VoiceAIControl:
 	def __init__(self, ner_dir, pos_dir, ft_dir):
-		self.snt = StanfordNERTagger(ner_dir[0], ner_dir[1])#'stanford-ner/voiceai-ner.ser.gz', 'stanford-ner/stanford-ner.jar') 
-		self.spt = StanfordPOSTagger(pos_dir[0], pos_dir[1])#'stanford-pos/voiceai-pos.tagger', 'stanford-pos/stanford-postagger.jar')
+		configuration = open("config.bot", 'r')
+		#MODELS_DIR, FASTTEXT_DIR, POS_DIR, NER_DIR, MUSIC_XML_DIR
+		MODELS_DIR = ""
+		FASTTEXT_DIR = ""
+		POS_DIR = ""
+		NER_DIR = ""
+		MUSIC_XML_DIR = ""
+		lines = [line.strip() for line in configuration.readlines()]
+		i = 0
+		while i < len(lines):
+			if lines[i] == 'MODELS_DIR':
+				i = i+1
+				MODELS_DIR = lines[i]
+				i = i+1
+			if lines[i] == 'FASTTEXT_DIR':
+				i = i+1
+				FASTTEXT_DIR = lines[i]
+				i = i+1
+			if lines[i] == 'POS_DIR':
+				i = i+1
+				POS_DIR = lines[i]
+				i = i+1
+			if lines[i] == 'NER_DIR':
+				i = i+1
+				NER_DIR = lines[i]
+				i = i+1
+			if lines[i] == 'MUSIC_XML_DIR':
+				i = i+1
+				MUSIC_XML_DIR = lines[i]
+				i = i+1
 
-		self.mp  = MusicControl('iml.xml', '/run/media/vidur/Kachra/Music/')
-		#self.tc  = TrainControl()
+
+		self.snt = StanfordNERTagger(MODELS_DIR+"/stanford-ner/voiceai-ner.ser.gz", NER_DIR)#'stanford-ner/voiceai-ner.ser.gz', 'stanford-ner/stanford-ner.jar') 
+		self.spt = StanfordPOSTagger(MODELS_DIR+"/stanford-pos/voiceai-pos.tagger", POS_DIR)#'stanford-pos/voiceai-pos.tagger', 'stanford-pos/stanford-postagger.jar')
+
+		self.mp  = MusicControl(MUSIC_XML_DIR, '/run/media/vidur/Kachra/Music/')
 		self.hc  = HardwareControl()
 		#self.qc  = QuestionControl()
 		#self.ac  = AlarmControl()
 		#self.gc  = GreetingControl()
-		self.tyc = TypeClassifier(ft_dir[0], ft_dir[1])#"fastText/voiceai.bin")
+		self.tyc = TypeClassifier(MODELS_DIR+"/fastText/voiceai.bin", FASTTEXT_DIR+"/fasttext")#"fastText/voiceai.bin")
 		self.cc  = ConversionControl()
 
 	def process_message(self, msg):
@@ -38,14 +68,10 @@ class VoiceAIControl:
 		#MESSAGE TYPE CLASSIFIERS:
 		#1 - Music
 		#2 - Brightness and Volume
-		#3 - Questions/Google/Wiki
-		#4 - Alarm
+		#3 - Units and Money
+		#4 - Questions/Google/Wiki
+		#5 - Alarm
 		#0 - Train POS and NER
-
-		if msg_words[0] == 'xadd' or msg_words[0] == 'xtrain':
-			#START TRAINING/ADDING
-			return "Train / Add done!"
-
 
 		textType = self.tyc.classifyText(msg)
 		if textType > -1:
@@ -54,26 +80,42 @@ class VoiceAIControl:
 			return "I'm sorry I didn't get that, Vidur"
 
 		#CATCH POS
-		Nouns = []
-		Verbs = []
-		Adjs  = []
-		Numbers = []
+		ENT = []
+		NNN = []
+		VER = []
+		ADJ = []
+		ADV = []
+		PRE = []
+		QUS = []
+		NUM = []
 		pos_tagged = self.spt.tag(msg_words)
 		
 		for i, tup in enumerate(pos_tagged):
 			mixed = tup[0]+'-'+tup[1]
 			msg = msg + ' ' + mixed
 			if tup[1] == 'VER':
-				Verbs.append((i, tup[0].lower()))
+				VER.append((i, tup[0].lower()))
 			else:
 				if tup[1] == 'ADJ':
-					Adjs.append((i, tup[0].lower()))
+					ADJ.append((i, tup[0].lower()))
 				else:
 					if tup[1] == 'NNN':
-						Nouns.append((i, tup[0].lower()))
+						NNN.append((i, tup[0].lower()))
 					else:
 						if tup[1] == 'NUM':
-							Numbers.append((i, tup[0]))
+							NUM.append((i, tup[0]))
+						else:
+							if tup[1] == 'ENT':
+								ENT.append((i, tup[0].lower()))
+							else:
+								if tup[1] == 'ADV':
+									ADV.append((i, tup[0].lower()))
+								else:
+									if tup[1] == 'QUS':
+										QUS.append((i, tup[0].lower()))
+									else:
+										if tup[1] == 'PRE':
+											PRE.append((i, tup[0].lower()))
 
 		saveF = open("allTexts.tsv", 'a')
 		saveF.write(msg)
@@ -84,7 +126,7 @@ class VoiceAIControl:
 		entities = []
 		ct = -1
 		prevEntity = False
-		for i, tup in enumerate(pos_tagged):
+		for i, tup in enumerate(ENT):
 			if tup[1] == 'ENT':
 				if prevEntity == True:
 					entities[ct].append(tup[0])
@@ -194,8 +236,9 @@ class VoiceAIControl:
 			if MainVerb == 'play':
 				msg = "\n".join([msg, "Playing song :", self.mp.Play(song_name, artist_name, album_name)])
 				#bot.send_text_message(recipient_id, msg)
+				return msg
 
-			return msg
+			textType = 4
 		
 		if textType == 2:
 			KeyVerbs = ['set', 'increase', 'decrease']
@@ -268,11 +311,19 @@ class VoiceAIControl:
 		if textType == 3:
 			quantity = 1
 			if len(Numbers) > 0:
-				quantity = int(Numbers[0][1])
+				quantity = float(Numbers[0][1])
+
+			print(Money)
 
 			if len(Money) > 1:
 				return "".join([msg, self.cc.convertMoney(Money[0], quantity, Money[1])])
 			else:
-				return "".join([msg, self.cc.convertMoney(Money[0], quantity)]) 	
+				if len(Money) > 0:
+					return "".join([msg, self.cc.convertMoney(Money[0], quantity)])
+				else:
+					return msg
+
 			
 			
+		if textType == 4:
+			return "".join([msg, "Search request"])

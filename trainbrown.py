@@ -21,21 +21,25 @@ for line in cats:
 
 			if len(tags) > 4 and tags[-2]=="t" and tags[-1]=="l":
 				wrdtag == "ENT"
+				#wrd = 'ENTITY'
 			else:
 				if tag=="np":
 					wrdtag = "ENT"
+					#wrd = 'ENTITY'
 				else:
 					if tag=="ab" or tag=="jj" or tag=="ap" or tag == "od":
 						wrdtag = "ADJ"
 					else:
 						if tag=="at" or tag=="dt" or tag=="pn" or tag=="pp" or tag=="pr":
-							wrdtag = "PRT"
+							#wrdtag = "PRT" #O
+							wrdtag = 'OOO'
 						else:
 							if tag=="be" or tag=="hv" or tag=="md" or tag=="vb" or tag=="do":
 								wrdtag = "VER"
 							else:
 								if tag=="cs" or tag=="cc":
-									wrdtag = "CON"
+									#wrdtag = "CON" #0
+									wrdtag = 'OOO'
 								else:
 									if tag=="ex" or tag=="ql" or tag=="rb" or tag=="rn" or tag=="rp":
 										wrdtag = "ADV"
@@ -47,10 +51,12 @@ for line in cats:
 												wrdtag = "NNN"
 											else:
 												if tag=="uh":
-													wrdtag = "ITJ"
+													#wrdtag = "ITJ" #0
+													wrdtag = 'OOO'
 												else:
 													if tag=="fw":
 														wrdtag = "ENT"
+														#wrd = 'ENTITY'
 													else:
 														if tag=="wp" or tag=="wd" or tag=="wq" or tag=="wr":
 															wrdtag = 'QUS'
@@ -61,6 +67,7 @@ for line in cats:
 																wrdtag = "."
 			if wrdtag == "":
 				wrdtag = "ENT"
+				#wrd = 'ENTITY'
 			fw.write(wrd)
 			fw.write('_')
 			fw.write(wrdtag)
